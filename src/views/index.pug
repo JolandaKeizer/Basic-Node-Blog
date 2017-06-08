@@ -1,0 +1,62 @@
+doctype html
+html
+    head
+        meta(charset='UTF-8')
+        title Sign-Up/Login Form
+        link(href='https://fonts.googleapis.com/css?family=Titillium+Web:400,300,600', rel='stylesheet', type='text/css')
+        link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css')
+        link(rel='stylesheet', href='../../main.css', type='text/css')
+
+    body
+        .form
+            ul.tab-group
+                li.tab.active
+                    a(href='#signup') Sign Up
+                li.tab
+                    a(href='#login') Log In
+            .tab-content
+                #signup
+                    h1 Sign Up for Free
+                    form(method='POST' action='/signup')
+                        .top-row
+                            .field-wrap
+                                label
+                                    | First Name
+                                    span.req *
+                                input(type='text', name="firstName" required='', autocomplete='off')
+                            .field-wrap
+                                label
+                                    | Last Name
+                                    span.req *
+                                input(type='text', name="lastName" required='', autocomplete='off')
+                        .field-wrap
+                            label
+                                | Email Address
+                                span.req *
+                            input(type='email', name="email" required='', autocomplete='off')
+                        .field-wrap
+                            label
+                                | Set A Password
+                                span.req *
+                            input(type='password', name="password" required='', autocomplete='off')
+                        button.button.button-block(type='submit') Get Started
+                #login
+                    h1 Welcome Back!
+                    form(method='POST' action='/login')
+                        .field-wrap
+                            label
+                                | Email Address
+                                span.req *
+                            input(type='email', name="email", value='test@gmail.com' required='', autocomplete='off')
+                        .field-wrap
+                            label
+                                | Password
+                                span.req *
+                            input(type='password', name="password", value='blabla' required='', autocomplete='off')
+                        p.forgot
+                            a(href='#') Forgot Password?
+                        button.button.button-block Log In
+            // tab-content
+        // /form
+        script(src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js')
+        script(src='index.js')
