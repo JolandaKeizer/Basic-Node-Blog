@@ -6,7 +6,7 @@ html(lang='en')
 		meta(name='viewport', content='width=device-width, initial-scale=1')
 		meta(name='description', content='')
 		meta(name='author', content='')
-		title Freelancer - Start Bootstrap Theme
+		title Basic Node Blog
 		// Bootstrap Core CSS
 		link(href='vendor/bootstrap/css/bootstrap.min.css', rel='stylesheet')
 		link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
@@ -67,7 +67,7 @@ html(lang='en')
 						hr.star-primary
 				.row
 					//- .col-sm-4.portfolio-item
-					//- 	h3 #{title}
+					//- 	h3 #{title}™
 					//- 	p #{message}
 					//- 		.caption
 					//- 			.caption-content
@@ -81,23 +81,22 @@ html(lang='en')
 					//- 	p message
 					//- 		.caption
 
-					each blogPost in message
+					each blogPost in blogPosts
 						.col-sm-4.portfolio-item
 							h3 #{blogPost.title}
 							p #{blogPost.body}
-
-
-							p #{comments[0]}
 							p #{blogPost.id}
-							form(method='POST' action='/comment')
-								.form-group
-									// Message input !
-									input#email_id.form-control(type='title', name='message_id', placeholder='Id')
-									label.control-label( for='message_id') Comment
-									textarea#message_id.form-control(name='comment',  rows='3')
-								.form-group
-									// Submit button !
-									button.btn.btn-primary(name='submit', type='submit') Submit
+							each comment in blogPost.comments
+								p #{comment.body}
+						form(method='POST' action='/comment')
+							.form-group
+								// Message input !
+								input#email_id.form-control(type='hidden', name='message_id', value=blogPost.id)
+								label.control-label( for='message_id') Comment
+								textarea#message_id.form-control(name='comment',  rows='3')
+							.form-group
+								// Submit button !
+								button.btn.btn-primary(name='submit', type='submit') Submit
 					
 		// About Section
 		section#about.success

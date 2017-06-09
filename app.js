@@ -64,7 +64,7 @@ Message.belongsTo(User)
 User.hasMany(Message)
 Message.hasMany(Comment)
 
-sequelize.sync({force: true})
+sequelize.sync({force: false    })
   .then(() => User.create({
     firstname: 'name',
     lastname: 'lastname',
@@ -123,32 +123,15 @@ app.get('/profile', function (request, response) {
                 userId: user.id
             },
             include: [{
-                model: Comment,
+                model: Comment
             }]
         })
         .then( blogPosts => { 
-            console.log(blogPosts);
-         //Promis
-
-         Comment.findAll({
-            where: {
-                messageId: blogPosts.id
-            }
-
-         }).then(comments => {
-                response.render('profile', 
-            {   
-                message: blogPosts,
-                comments: comments,
-                email: user.email,
-                firstname: user.firstname,
-                lastname: user.lastname,
+                // console.log(blogPosts.comments)
+                response.render('profile', {   
+                    blogPosts: blogPosts,
             })
-
-         } )
-            
         })
-        
     }
 });
 
@@ -248,6 +231,8 @@ app.post('/comment', (req, res) => { // handle post page request
     const textareacomment = req.body.comment;
     const messageIdentifier = req.body.message_id
     const user = req.session.user;
+
+    console.log("identifier:" + messageIdentifier)
 
     console.log("Message Identifier should be"+ messageIdentifier);
     console.log('Test textareacomment '+ textareacomment)
