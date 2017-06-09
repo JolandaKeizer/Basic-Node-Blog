@@ -26,6 +26,7 @@ app.use(express.static('css'));
 app.use(express.static('img'));
 app.use(express.static('js'));
 app.use('/' , bodyparser());
+// app.use(express.session({secret: 'gaatjsformakebettersecurity'}));
 
 
 /**
@@ -40,7 +41,7 @@ var sequelize = new Sequelize('jolanda', 'jo', null, {
     }
 });
 
-// Create user
+// Create models
 
 const User = sequelize.define('user', {
   firstname: Sequelize.STRING,
@@ -49,20 +50,47 @@ const User = sequelize.define('user', {
   password: Sequelize.STRING
 });
 
-sequelize.sync()
+const Message = sequelize.define('message', {
+    title: Sequelize.STRING,
+    body: Sequelize.STRING
+});
+
+const Comment = sequelize.define('comment', {
+    body: Sequelize.STRING,
+    messageId: Sequelize.INTEGER
+});
+
+Message.belongsTo(User)
+User.hasMany(Message)
+Message.hasMany(Comment)
+
+sequelize.sync({force: true})
   .then(() => User.create({
     firstname: 'name',
     lastname: 'lastname',
-    email: 'janedoe',
+    email: 'janedoe@gmail.com',
     password: 'password'
   }))
   .then(jane => {
     console.log(jane.get({
       plain: true
+    }))
+  })
+  .then(() => Message.create({
+    title: 'title',
+    body: 'message'
+  }))
+  .then(message => {
+    console.log(message.get({
+      plain: true
     }));
-  });
+  })
+  .catch( e => console.log(e));
+
+
+  
 /**
- * Set sessions
+ * Configure sessions
  */
 
 app.use(session({
@@ -82,19 +110,45 @@ app.get('/', (req, res) => {
 app.get('/profile', function (request, response) {
     var user = request.session.user;
     console.log(user)
-    console.log("test " + user.firstName)
+    console.log("test " + user.firstname)
     if (user === undefined) {
         response.redirect('/?message=' + 
     encodeURIComponent("Please log in to view your profile."));
     } 
     else {
         console.log('user', user)
-        response.render('profile', 
-        {
-            email: user.email,
-            firstname: user.firstname,
-            lastname: user.lastname
-        });
+
+        Message.findAll({
+            where: {
+                userId: user.id
+            },
+            include: [{
+                model: Comment,
+            }]
+        })
+        .then( blogPosts => { 
+            console.log(blogPosts);
+         //Promis
+
+         Comment.findAll({
+            where: {
+                messageId: blogPosts.id
+            }
+
+         }).then(comments => {
+                response.render('profile', 
+            {   
+                message: blogPosts,
+                comments: comments,
+                email: user.email,
+                firstname: user.firstname,
+                lastname: user.lastname,
+            })
+
+         } )
+            
+        })
+        
     }
 });
 
@@ -143,32 +197,71 @@ app.get('/logout', function (request, response) {
     })
 });
 
-// // Route signup
-// app.post('/signup', (req, res) => {
-//     res.render('signup')
-// })
-
 
 app.post('/signup', function(req,res){
-    var inputname = req.body.firstName;
-    var inputname = req.body.lastName;
-    var inputname = req.body.email;
+    var inputname = req.body.firstname;
+    var inputlastname = req.body.lastname;
+    var inputemail = req.body.email;
     var inputpassword = req.body.password;
-    console.log("I am receiving following user credentials: "+inputname+" "+inputpassword);
+    console.log("I am receiving following user credentials: "+inputname+" "+inputpassword+" "+inputname+" "+inputlastname);
     // Creating a new user
-    sequelize
-        .sync({force: true})
-        .then(function(){
-            return User.create({
-            fisrtName: inputname,
-            lastName: inputname,
-            email: inputemail,
-            password: inputpassword 
-            });
-    }).then( () => {
+    User.create({
+        firstname: inputname,
+        lastname: inputlastname,
+        email: inputemail,
+        password: inputpassword 
+    })
+    .then( () => {
         res.redirect('/?message=' + encodeURIComponent("Your user got successfully created. Log in below."));
     });
 })
+
+//route 2 post Tweet page
+app.get('/messages', (req, res) => { // handle post page request
+    res.render('messages')
+});
+
+// Route create message
+app.post('/create', function(req, res){
+
+    const inputtitle = req.body.title;
+    const textareamessage = req.body.message;
+    console.log('req.session', req.session)
+    Message.create({
+        title: inputtitle,
+        body: textareamessage,
+        userId: req.session.user.id
+    })
+    .then( () => {
+        // const id = req.body.id;
+        // console.log("IDENTIFIER ALERT "+id);
+        req.session.content = {
+            title: req.body.title,
+            Message: req.body.message
+        }
+        res.redirect('/profile?message=' + encodeURIComponent("You created successfully a post")); // title: message.title, message: message.message
+    });
+})
+
+//route Comment
+app.post('/comment', (req, res) => { // handle post page request
+    const textareacomment = req.body.comment;
+    const messageIdentifier = req.body.message_id
+    const user = req.session.user;
+
+    console.log("Message Identifier should be"+ messageIdentifier);
+    console.log('Test textareacomment '+ textareacomment)
+
+    Comment.create({
+        body: textareacomment,
+        messageId: messageIdentifier
+    })
+
+    res.redirect('/profile?message=' + encodeURIComponent("You created successfully a post")); // title: message.title, message: message.message
+
+});
+
+
 
 const server = app.listen(3000, function () {
   console.log('Server running at http://localhost:' + server.address().port)

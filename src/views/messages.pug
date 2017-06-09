@@ -50,20 +50,30 @@ html(lang='en')
 			// /.container-fluid
 		// Header
 		header
-			#maincontent.container(tabindex='-1')
-				.row
-					.col-lg-12
-						img.img-responsive(src='/portfolio/jo.png', alt='')
-						.intro-text
-							h1.name #{firstname} #{lastname}
-							hr.star-light
-							span.skills Web Developer - Graphic Artist - User Experience Designer
-		// Portfolio Grid Section
+		//- 	#maincontent.container(tabindex='-1')
+		//- 		.row
+		//- 			.col-lg-12
+		//- 				img.img-responsive(src='/portfolio/jo.png', alt='')
+		//- 				.intro-text
+		//- 					h1.name #{firstname} #{lastname}
+		//- 					hr.star-light
+		//- 					span.skills Web Developer - Graphic Artist - User Experience Designer
+		//- // Portfolio Grid Section
 		section#portfolio
 			.container
 				.row
 					.col-lg-12.text-center
-						h2 Latest Messages
+						h1
+						h2 Comments
+						form(method='POST' action='/messages')
+							.form-group
+								// Message input !
+								label.control-label(for='message_id') Comment
+								textarea#message_id.form-control(name='message', rows='5')
+							.form-group
+								// Submit button !
+								button.btn.btn-primary(name='submit', type='submit') Submit
+
 						hr.star-primary
 				.row
 					//- .col-sm-4.portfolio-item
@@ -81,23 +91,12 @@ html(lang='en')
 					//- 	p message
 					//- 		.caption
 
-					each blogPost in message
-						.col-sm-4.portfolio-item
-							h3 #{blogPost.title}
-							p #{blogPost.body}
-
-
-							p #{comments[0]}
-							p #{blogPost.id}
-							form(method='POST' action='/comment')
-								.form-group
-									// Message input !
-									input#email_id.form-control(type='title', name='message_id', placeholder='Id')
-									label.control-label( for='message_id') Comment
-									textarea#message_id.form-control(name='comment',  rows='3')
-								.form-group
-									// Submit button !
-									button.btn.btn-primary(name='submit', type='submit') Submit
+					//- each blogPost in aap
+					//- 	.col-sm-4.portfolio-item
+					//- 		h3 #{blogPost.title}
+					//- 		p #{blogPost.body}
+					//- 			.caption
+					//- 				.caption-content
 					
 		// About Section
 		section#about.success

@@ -514,3 +514,10 @@ fieldset[disabled] .btn-success.active {
 div#maincontent {
   outline: none;
 }
+
+  @media (min-width: 767px){
+    #portfolio .portfolio-item {
+        margin: 0 0 30px;
+        text-align: center !important;
+    }  
+  }
