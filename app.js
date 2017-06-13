@@ -81,7 +81,7 @@ sequelize.sync({force: false    })
     coffee: 'Beans',
     city: 'Amsterdam',
     email: 'janedoe@gmail.com',
-    password: 'password'
+    password: '$2a$09$nEAJETpz7aCdb0YTEoZ0M.73zfpU9ltrRcJpU6H9UMa/ifHwXlwZ6' //ikhouvanijs
   }))
   .then(jane => {
     console.log(jane.get({
@@ -176,22 +176,22 @@ app.post('/login', function (request, response) {
         return;
     }
 
-    console.log("test1")
-
     User.findOne({
         where: {
             email: request.body.email
         }
-    }).then(function (user) {
-        console.log("Teeeeeest: " + user)
-        //
-        if (user !== null && request.body.password === user.password) {
-            request.session.user = user;
-            console.log("logged in")
-            response.redirect('/profile');
-        } else {
+    }).then( user => {
+        const hash = user.password;
+        console.log('user', user, user.password)
+
+        bcrypt.compare(request.body.password, hash, function(err, res) {
+            if (err) {
             response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
-        }
+           } else {
+                request.session.user = user;
+                response.redirect('/profile');
+            }
+        })
     }, function (error) {
         response.redirect('/?message=' + encodeURIComponent("Invalid email or password."));
     });
@@ -216,30 +216,29 @@ app.post('/signup', function(req,res){
     var inputpassword = req.body.password;
     var inputcoffee = req.body.coffee;
     var inputcity = req.body.city;
-    const saltRounds = 10;
-    const myPlaintextPassword = 's0/\/\P4$$w0rD';
-    const someOtherPlaintextPassword = 'not_bacon';
+
+
 
     console.log("I am receiving following user credentials: "+inputname+" "+inputpassword+" "+inputname+" "+inputlastname);
 
-    // bcrypt.genSalt(saltRounds, function(err, salt) {
-    //   bcrypt.hash(myPlaintextPassword, salt, function(err, hash) {
-    //         // Store hash in your password DB. 
-    //     });
-    // Creating a new user
-    User.create({
-        firstname: inputname,
-        lastname: inputlastname,
-        coffee: inputcoffee,
-        city: inputcity,
-        email: inputemail,
-        password: hash 
-    })
-    .then( () => {
-        res.redirect('/?message=' + encodeURIComponent("Your user got successfully created. Log in below."));
-    });
+    bcrypt.hash(inputpassword, 9, function(err, hash) {
+        if (err) {
+            console.log(err)
+        } else {
+                User.create({
+                    firstname: inputname,
+                    lastname: inputlastname,
+                    coffee: inputcoffee,
+                    city: inputcity,
+                    email: inputemail,
+                    password: hash 
+            })
+            .then( () => {
+               res.redirect('/?message=' + encodeURIComponent("Your user got successfully created. Log in below."));
+            });
+        }
+    });        
 })
-
 
 // Route show all messages
 app.get('/messages', function (req, res) {
@@ -248,9 +247,13 @@ app.get('/messages', function (req, res) {
         res.redirect('/?message=' + encodeURIComponent("Please log in to view all postings."));
     } else {
         Message.findAll({
-            include: [{
+            include: 
+                [{
                     model: User
-                }],
+                },
+                {
+                    model: Comment
+                }]
 
 
         }).then(function(messages){  
@@ -279,9 +282,6 @@ app.post('/create', function(req, res){
         userId: req.session.user.id
     })
     .then( () => {
-        // Message.findAll ({
-        //     limit: 3
-        // })
         res.redirect('/profile?message=' + encodeURIComponent("You created successfully a post")); // title: message.title, message: message.message
     });
 })

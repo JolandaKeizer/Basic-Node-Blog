@@ -88,6 +88,21 @@ html(lang='en')
 							p=bla.coffee
 							p=bla.title
 							p=bla.body
+
+							each comment in bla.comments
+								.comment
+								p #{firstname}: #{comment.body}
+							form(method='POST' action='/comment')
+								.form-group.message-item
+									// Message input !
+									input#email_id.form-control(type='hidden', name='message_id', value=bla.id)
+									label.control-label( for='message_id') Comment #{firstname}
+									textarea#message_id.form-control(name='comment',  rows='3')
+								.form-group.message-item
+									.col-sm-6.portfolio-item
+									// Submit button !
+									button.btn.btn-primary(name='submit', type='submit') Submit
+
 							
 
 
