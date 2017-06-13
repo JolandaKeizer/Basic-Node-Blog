@@ -16,7 +16,7 @@ html
                     a(href='#login') Log In
             .tab-content
                 #signup
-                    h1 Sign Up for Free
+                    h1 Sign Up for Free only for coffee lovers
                     form(method='POST' action='/signup')
                         .top-row
                             .field-wrap
@@ -29,6 +29,18 @@ html
                                     | Last Name
                                     span.req *
                                 input(type='text', name="lastname", value='puck' required='', autocomplete='off')
+                        .field-wrap
+                            label
+                                | Favourite Coffee
+                                span.req *
+                            input(type='text', name="coffee", value='Beans' required='', autocomplete='off')
+                        .field-wrap
+                            label
+                                | Coffee lover of city?
+                                span.req *
+                            input(type='text', name="city", value='Amsterdam' required='', autocomplete='off')
+
+
                         .field-wrap
                             label
                                 | Email Address

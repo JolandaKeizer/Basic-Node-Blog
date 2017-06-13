@@ -52,9 +52,9 @@ hr.star-primary:after {
 hr.star-light {
   border-color: white;
 }
-hr.star-light:after {
-  background-color: #18BC9C;
-  color: white;
+hr.star-primary:after {
+    background-color: transparent !important;
+    color: #2C3E50;
 }
 hr.star-primary {
   border-color: #2C3E50;
@@ -68,7 +68,11 @@ hr.star-primary:after {
 }
 header {
   text-align: center;
-  background: #18BC9C;
+  background-image: url("portfolio/profile.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center; 
+  background-size: 100%;
   color: white;
 }
 header .container {
@@ -103,7 +107,7 @@ header .intro-text .skills {
   }
 }
 .navbar-custom {
-  background: #2C3E50;
+  background: #f1cf0f;
   font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-transform: uppercase;
   font-weight: 700;
@@ -181,7 +185,11 @@ section h2 {
   font-size: 3em;
 }
 section.success {
-  background: #18BC9C;
+  background-image: url("portfolio/background.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center; 
+  background-size: 100%;
   color: white;
 }
 @media (max-width: 767px) {
@@ -195,6 +203,7 @@ section.success {
 #portfolio .portfolio-item {
   margin: 0 0 15px;
   right: 0;
+  border: solid;
 }
 #portfolio .portfolio-item .portfolio-link {
   display: block;
@@ -297,14 +306,14 @@ footer h3 {
 }
 footer .footer-above {
   padding-top: 50px;
-  background-color: #2C3E50;
+  background-color: #f1cf0f;
 }
 footer .footer-col {
   margin-bottom: 50px;
 }
 footer .footer-below {
   padding: 25px 0;
-  background-color: #233140;
+  background-color: #162320;
 }
 .btn-outline {
   color: white;
@@ -521,3 +530,91 @@ div#maincontent {
         text-align: center !important;
     }  
   }
+
+  .btn-danger {
+    float: right !important;
+    margin-right: 10px;
+}
+
+#messages {
+  display: flex;        /* Flex layout so items have equal height  */
+  flex-flow: row wrap;  /* Allow items to wrap into multiple lines */
+  margin: 0px;
+}
+.message-item {
+  display: flex;        /* Lay out each item using flex layout */
+  flex-flow: column;    /* Lay out item’s contents vertically  */
+  padding: 4px;
+}
+
+.message-item > button {
+  margin-top: auto;     /* Auto top margin pushes button to bottom */
+}
+
+button.btn.btn-primary {
+  margin-top: auto;
+}
+
+.comment {
+  margin-top: auto;
+}
+
+#portfolio * {
+    z-index: 2;
+    margin-top: auto;
+}
+
+hr.star-light:after {
+    background-color: #162320 !important;
+    color: white;
+}
+
+img {
+    display: block;
+    float: left;
+    height: 90px;
+    overflow: hidden;
+    padding: 0;
+    text-indent: -9999px;
+    width: auto;
+}
+
+.logo img {
+    display: block;
+    float: left;
+    height: 90px;
+    overflow: hidden;
+    padding: 0;
+    text-indent: -9999px;
+    width: auto;
+}
+
+@media (min-width: 768px) {
+  .navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+    margin-left: 490px !important;
+    float: right;
+}
+
+.navbar-header.page-scroll.logo {
+  display: inline-block;
+}
+
+.navbar-header.text {
+  display: inline-block;
+}
+
+.btn-primary {
+    color: white;
+    background-color: #f1cf0f;
+    border-color: #f1cf0f;
+    font-weight: 700;
+    width: 100%;
+}
+
+label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+    float: left;
+}

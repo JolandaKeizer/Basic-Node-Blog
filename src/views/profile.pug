@@ -6,7 +6,7 @@ html(lang='en')
 		meta(name='viewport', content='width=device-width, initial-scale=1')
 		meta(name='description', content='')
 		meta(name='author', content='')
-		title Basic Node Blog
+		title Blog for Coffee lovers
 		// Bootstrap Core CSS
 		link(href='vendor/bootstrap/css/bootstrap.min.css', rel='stylesheet')
 		link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
@@ -22,6 +22,8 @@ html(lang='en')
 		//if lt IE 9
 			script(src='https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js')
 			script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')
+
+
 	body#page-top.index
 		#skipnav
 			a(href='#maincontent') Skip to main content
@@ -29,23 +31,34 @@ html(lang='en')
 		nav#mainNav.navbar.navbar-default.navbar-fixed-top.navbar-custom
 			.container
 				// Brand and toggle get grouped for better mobile display
-				.navbar-header.page-scroll
+				.navbar-header.page-scroll.logo
 					button.navbar-toggle(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
 						span.sr-only Toggle navigation
 						|  Menu 
 						i.fa.fa-bars
-					a.navbar-brand(href='/logout') Portfolio #{firstname}
+							
+					img.logo(src='/portfolio/logo.png', alt='') 
+				.navbar-header.text
+					a.navbar-brand(href='/logout') #{firstname} #{lastname} loves coffee
+
 				// Collect the nav links, forms, and other content for toggling
 				#bs-example-navbar-collapse-1.collapse.navbar-collapse
 					ul.nav.navbar-nav.navbar-right
 						li.hidden
 							a(href='#page-top')
 						li.page-scroll
-							a(href='/messages') Messages
+							a(href='/messages') All coffee date
 						li.page-scroll
-							a(href='/create') Post comment
+							a(href='/create') Your Coffee Friends
 						li.page-scroll
-							a(href='/logout') logoout
+							a(href='/logout') logout
+						form(action='/delete', method='delete')
+							.form-group
+								button.btn.btn-danger.btn-xs(type='submit') Delete Account
+						form(action='/edit', method='GET')
+							.form-group
+								button.btn.btn-danger.btn-xs(type='submit') Edit Account
+
 				// /.navbar-collapse
 			// /.container-fluid
 		// Header
@@ -53,57 +66,51 @@ html(lang='en')
 			#maincontent.container(tabindex='-1')
 				.row
 					.col-lg-12
-						img.img-responsive(src='/portfolio/jo.png', alt='')
+						img.img-responsive(src='/portfolio/profile-image.png', alt='')
 						.intro-text
 							h1.name #{firstname} #{lastname}
 							hr.star-light
-							span.skills Web Developer - Graphic Artist - User Experience Designer
+							span.skills Favourite Coffee: #{coffee} 
+							p Coffee Lover in: #{city}
 		// Portfolio Grid Section
 		section#portfolio
 			.container
 				.row
 					.col-lg-12.text-center
-						h2 Latest Messages
+						h2 Your coffee dates:
 						hr.star-primary
 				.row
-					//- .col-sm-4.portfolio-item
-					//- 	h3 #{title}™
-					//- 	p #{message}
-					//- 		.caption
-					//- 			.caption-content
-					//- .col-sm-4.portfolio-item
-					//- 	h3 title
-					//- 	p message
-					//- 		.caption
-
-					//- .col-sm-4.portfolio-item
-					//- 	h3 title
-					//- 	p message
-					//- 		.caption
-
+				section#messages
 					each blogPost in blogPosts
-						.col-sm-4.portfolio-item
-							h3 #{blogPost.title}
+						.col-sm-4.portfolio-item.message-item
+							h3 #{blogPost.date}
+							h4 #{blogPost.city}
+							p #{blogPost.title}
 							p #{blogPost.body}
 							p #{blogPost.id}
 							each comment in blogPost.comments
-								p #{comment.body}
-						form(method='POST' action='/comment')
-							.form-group
-								// Message input !
-								input#email_id.form-control(type='hidden', name='message_id', value=blogPost.id)
-								label.control-label( for='message_id') Comment
-								textarea#message_id.form-control(name='comment',  rows='3')
-							.form-group
-								// Submit button !
-								button.btn.btn-primary(name='submit', type='submit') Submit
+								.comment
+								p #{firstname}: #{comment.body}
+							form(method='POST' action='/comment')
+								.form-group.message-item
+									// Message input !
+									input#email_id.form-control(type='hidden', name='message_id', value=blogPost.id)
+									label.control-label( for='message_id') Comment #{firstname}
+									textarea#message_id.form-control(name='comment',  rows='3')
+								.form-group.message-item
+									.col-sm-6.portfolio-item
+									// Submit button !
+									button.btn.btn-primary(name='submit', type='submit') Submit
+
+
+
 					
 		// About Section
 		section#about.success
 			.container
 				.row
 					.col-lg-12.text-center
-						h2 Create Message
+						h2 Create a Coffee date 
 						hr.star-light
 				.row
 					.col-lg-4.col-lg-offset-2
@@ -111,8 +118,12 @@ html(lang='en')
 
 						form(method='POST' action='/create')
 							.form-group
-								label.control-label(for='title_id') Title
-								input#email_id.form-control(type='title', name='title', placeholder='title')
+								label.control-label(for='title_id') Name the Date
+								input#email_id.form-control(type='title', name='title', placeholder='Always time for coffee')
+								label.control-label(for='title_id') Date
+								input#email_id.form-control(type='date', name='date', placeholder='title')
+								label.control-label(for='title_id') Location
+								input#email_id.form-control(type='title', name='city', placeholder='title')
 								// Message input !
 								label.control-label(for='message_id') Message
 								textarea#message_id.form-control(name='message', rows='10')
@@ -120,48 +131,6 @@ html(lang='en')
 								// Submit button !
 								button.btn.btn-primary(name='submit', type='submit') Submit
 
-	
-	
-
-
-
-		//- // Contact Section
-		//- section#contact
-		//- 	.container
-		//- 		.row
-		//- 			.col-lg-12.text-center
-		//- 				h2 Contact Me
-		//- 				hr.star-primary
-		//- 		.row
-		//- 			.col-lg-8.col-lg-offset-2
-		//- 				// To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19.
-		//- 				// The form should work on most web servers, but if the form is not working you may need to configure your web server differently.
-		//- 				form#contactForm(name='sentMessage', novalidate='')
-		//- 					.row.control-group
-		//- 						.form-group.col-xs-12.floating-label-form-group.controls
-		//- 							label(for='name') Name
-		//- 							input#name.form-control(type='text', placeholder='Name', required='', data-validation-required-message='Please enter your name.')
-		//- 							p.help-block.text-danger
-		//- 					.row.control-group
-		//- 						.form-group.col-xs-12.floating-label-form-group.controls
-		//- 							label(for='email') Email Address
-		//- 							input#email.form-control(type='email', placeholder='Email Address', required='', data-validation-required-message='Please enter your email address.')
-		//- 							p.help-block.text-danger
-		//- 					.row.control-group
-		//- 						.form-group.col-xs-12.floating-label-form-group.controls
-		//- 							label(for='phone') Phone Number
-		//- 							input#phone.form-control(type='tel', placeholder='Phone Number', required='', data-validation-required-message='Please enter your phone number.')
-		//- 							p.help-block.text-danger
-		//- 					.row.control-group
-		//- 						.form-group.col-xs-12.floating-label-form-group.controls
-		//- 							label(for='message') Message
-		//- 							textarea#message.form-control(rows='5', placeholder='Message', required='', data-validation-required-message='Please enter a message.')
-		//- 							p.help-block.text-danger
-		//- 					br
-		//- 					#success
-		//- 					.row
-		//- 						.form-group.col-xs-12
-		//- 							button.btn.btn-success.btn-lg(type='submit') Send
 		// Footer
 		footer.text-center
 			.footer-above
@@ -174,7 +143,7 @@ html(lang='en')
 								br
 								| Beverly Hills, CA 90210
 						.footer-col.col-md-4
-							h3 Around the Web
+							h3 Follow me
 							ul.list-inline
 								li
 									a.btn-social.btn-outline(href='#')
@@ -206,7 +175,7 @@ html(lang='en')
 				.container
 					.row
 						.col-lg-12
-							| Copyright © Your Website 2016
+							| Copyright © Jolanda Keizer
 		// Scroll to Top Button (Only visible on small and extra-small screen sizes)
 		.scroll-top.page-scroll.hidden-sm.hidden-xs.hidden-lg.hidden-md
 			a.btn.btn-primary(href='#page-top')
@@ -415,3 +384,4 @@ html(lang='en')
 		script(src='js/contact_me.js')
 		// Theme JavaScript
 		script(src='js/freelancer.min.js')
+

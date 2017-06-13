@@ -7,7 +7,12 @@ html {
 }
 
 body {
-  background: #c1bdba;
+  background-image: url("portfolio/background.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center; 
+  background-size: 100%;
+  color: white;
   font-family: 'Titillium Web', sans-serif;
 }
 
@@ -694,10 +699,45 @@ div#maincontent {
   outline: none;
 }
 
-/*.portfolio-item {
-    margin: 0 0 30px;
-    text-align: center !important;
+.btn-danger {
+    float: right !important;
 }
-*/
 
+.tab-group .active a {
+    background: #f1cf0f;
+    color: #ffffff;
+}
 
+.button {
+    border: 0;
+    outline: none;
+    border-radius: 0;
+    padding: 15px 0;
+    font-size: 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    background: #f1cf0f;
+    color: #ffffff;
+    -webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    -webkit-appearance: none;
+}
+
+.button:hover, .button:focus {
+    background: #dbbd06;
+}
+
+.tab-group li a:hover {
+    background: #dbbd06;
+    color: #ffffff;
+}
+
+label .req {
+    margin: 2px;
+    color: #f1cf0f;
+}
+
+a, a:hover, a:focus, a:active, a.active {
+    color: #f1cf0f;
+}

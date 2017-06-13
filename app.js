@@ -8,6 +8,8 @@ const pg = require('pg');
 const pug = require('pug');
 const session = require('express-session');
 const Sequelize = require('sequelize');
+var bcrypt = require('bcrypt');
+
 
 
 
@@ -24,6 +26,7 @@ app.set('views', 'src/views');
 app.set('view engine', 'pug');
 app.use(express.static('css'));
 app.use(express.static('img'));
+app.use(express.static('vendor'));
 app.use(express.static('js'));
 app.use('/' , bodyparser());
 // app.use(express.session({secret: 'gaatjsformakebettersecurity'}));
@@ -41,18 +44,25 @@ var sequelize = new Sequelize('jolanda', 'jo', null, {
     }
 });
 
+
+
 // Create models
 
 const User = sequelize.define('user', {
   firstname: Sequelize.STRING,
-  lastname: Sequelize.STRING,  
+  lastname: Sequelize.STRING,
+  coffee: Sequelize.STRING,
+  city: Sequelize.STRING,  
   email: Sequelize.STRING,
   password: Sequelize.STRING
 });
 
 const Message = sequelize.define('message', {
     title: Sequelize.STRING,
-    body: Sequelize.STRING
+    body: Sequelize.STRING,
+    date: Sequelize.STRING,
+    coffee: Sequelize.STRING,
+    city: Sequelize.STRING
 });
 
 const Comment = sequelize.define('comment', {
@@ -68,6 +78,8 @@ sequelize.sync({force: false    })
   .then(() => User.create({
     firstname: 'name',
     lastname: 'lastname',
+    coffee: 'Beans',
+    city: 'Amsterdam',
     email: 'janedoe@gmail.com',
     password: 'password'
   }))
@@ -78,7 +90,11 @@ sequelize.sync({force: false    })
   })
   .then(() => Message.create({
     title: 'title',
-    body: 'message'
+    body: 'message',
+    userId: 1, //id of user Jane
+    date: 'date',
+    coffee: 'Beans',
+    city: 'Amsterdam'
   }))
   .then(message => {
     console.log(message.get({
@@ -109,8 +125,9 @@ app.get('/', (req, res) => {
 // Route profile page
 app.get('/profile', function (request, response) {
     var user = request.session.user;
+
+
     console.log(user)
-    console.log("test " + user.firstname)
     if (user === undefined) {
         response.redirect('/?message=' + 
     encodeURIComponent("Please log in to view your profile."));
@@ -124,12 +141,22 @@ app.get('/profile', function (request, response) {
             },
             include: [{
                 model: Comment
-            }]
+            }],
+                   
+                limit: 6,
+                order: ['date']
+
         })
+
         .then( blogPosts => { 
-                // console.log(blogPosts.comments)
+                console.log("De ekte test: " + user)
                 response.render('profile', {   
-                    blogPosts: blogPosts,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    email: user.email,
+                    coffee: user.coffee,
+                    city: user.city,
+                    blogPosts: blogPosts
             })
         })
     }
@@ -157,6 +184,7 @@ app.post('/login', function (request, response) {
         }
     }).then(function (user) {
         console.log("Teeeeeest: " + user)
+        //
         if (user !== null && request.body.password === user.password) {
             request.session.user = user;
             console.log("logged in")
@@ -180,48 +208,80 @@ app.get('/logout', function (request, response) {
     })
 });
 
-
+// Route signup
 app.post('/signup', function(req,res){
     var inputname = req.body.firstname;
     var inputlastname = req.body.lastname;
     var inputemail = req.body.email;
     var inputpassword = req.body.password;
+    var inputcoffee = req.body.coffee;
+    var inputcity = req.body.city;
+    const saltRounds = 10;
+    const myPlaintextPassword = 's0/\/\P4$$w0rD';
+    const someOtherPlaintextPassword = 'not_bacon';
+
     console.log("I am receiving following user credentials: "+inputname+" "+inputpassword+" "+inputname+" "+inputlastname);
+
+    // bcrypt.genSalt(saltRounds, function(err, salt) {
+    //   bcrypt.hash(myPlaintextPassword, salt, function(err, hash) {
+    //         // Store hash in your password DB. 
+    //     });
     // Creating a new user
     User.create({
         firstname: inputname,
         lastname: inputlastname,
+        coffee: inputcoffee,
+        city: inputcity,
         email: inputemail,
-        password: inputpassword 
+        password: hash 
     })
     .then( () => {
         res.redirect('/?message=' + encodeURIComponent("Your user got successfully created. Log in below."));
     });
 })
 
-//route 2 post Tweet page
-app.get('/messages', (req, res) => { // handle post page request
-    res.render('messages')
+
+// Route show all messages
+app.get('/messages', function (req, res) {
+    var user = req.session.user;
+    if (user === undefined) {
+        res.redirect('/?message=' + encodeURIComponent("Please log in to view all postings."));
+    } else {
+        Message.findAll({
+            include: [{
+                    model: User
+                }],
+
+
+        }).then(function(messages){  
+            res.render('messages', 
+                {messages: messages,
+                firstname: user.firstname,
+                lastname: user.lastname,
+            });
+        });
+    }
 });
 
 // Route create message
 app.post('/create', function(req, res){
 
     const inputtitle = req.body.title;
+    const inputdate = req.body.date;
+    const inputcity = req.body.city;
     const textareamessage = req.body.message;
     console.log('req.session', req.session)
     Message.create({
         title: inputtitle,
         body: textareamessage,
+        date: inputdate,
+        city: inputcity,
         userId: req.session.user.id
     })
     .then( () => {
-        // const id = req.body.id;
-        // console.log("IDENTIFIER ALERT "+id);
-        req.session.content = {
-            title: req.body.title,
-            Message: req.body.message
-        }
+        // Message.findAll ({
+        //     limit: 3
+        // })
         res.redirect('/profile?message=' + encodeURIComponent("You created successfully a post")); // title: message.title, message: message.message
     });
 })
@@ -246,6 +306,33 @@ app.post('/comment', (req, res) => { // handle post page request
 
 });
 
+// //Route Delete account
+// app.get('/delete', (req, res) => {
+
+//         Model.destroy({
+//             where: {
+//                 userId: user.id
+//             }
+//         })
+//         .then( delete => { 
+//                 console.log("Delete user: " + user.id)
+//                 response.render('delete', {   
+//                     firstname: user.firstname,
+//                     lastname: user.lastname,
+//                     email: user.email,
+//                     coffee: user.coffee,
+//                     city: user.city,
+//                     blogPosts: blogPosts
+//             })
+//         })
+
+//     res.render('delete')
+// })
+
+// // Route Edit Account
+// app.get('/edit', (req, res) => {
+//     response.render('edit');
+// })
 
 
 const server = app.listen(3000, function () {
